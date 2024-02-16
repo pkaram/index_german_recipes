@@ -1,3 +1,4 @@
+"includes etl utilities"
 import os
 import json
 import zipfile
@@ -14,6 +15,7 @@ def unzip_file(f):
     logging.info('file unzipped')
 
 def download_data(kaggle_ds):
+    "downloads data from kaggle"
     with open('./kaggle.json') as json_file:
         json_data = json.load(json_file)
     os.environ['KAGGLE_USERNAME'] = json_data.get('username')
@@ -23,10 +25,11 @@ def download_data(kaggle_ds):
         api.authenticate()
         api.dataset_download_files(kaggle_ds, path="./data/")
     except Exception as e:
-        logging.info('error during auth/download:{e}')
+        logging.info('error during auth/download: %s',e)
     logging.info('data downloaded')
 
 def keep_most_recent_recipes(df):
+    "keeps based on the most recent date only one recipe per url"
     df['Month'] = df.apply(lambda x: MONTH_MAPPING.get(x.Month), axis=1)
     for col in ['Year','Day']:
         df[col]=pd.to_numeric(df[col])
